@@ -1,0 +1,292 @@
+{% load static %}
+<style>
+.form-center {
+  max-width: 700px;
+  margin: 0px auto;
+  background: rgb(182, 240, 240);
+  padding: 60px;
+  width: 60% !important;
+  border-radius: 11px;
+  border: 1px solid #151718;
+  text-align: center;
+}
+
+.fcc-btn {
+  background-color: #51c4d8;
+  color: white;
+  padding: 9px 9px
+}
+  
+  input.ng-invalid {
+    background-color:rgb(255, 255, 255);
+    /* background-color: transparent; */
+    
+}
+
+input.ng-valid {
+    background-color:rgb(121, 252, 202);
+    /* background-color: transparent; */
+    
+
+}
+#fname { height:50px;
+    font-size:12pt;
+    width: 100% !important;
+    margin: 20px;
+    border-radius: 11px;
+    border: 1px solid #1970b7;
+    box-shadow: 2px 2px #888888;
+    align-content: center;
+}
+
+
+h1 {text-align: center;}
+</style>
+
+
+
+<h1>Hello</h1>
+ 
+<div  ng-app="myApp" ng-controller="detail">
+    <div class="form-center">
+        <form name="myform" (ngSubmit)="completeLogin()">
+            <label for="fname">First name:</label><br>
+            <input type="text" ng-model="form.name" id="fname" size="50" height="500" name="fname" ng-required="true" ><br>
+
+            <label for="emial">email:</label><br>
+            <input type="email" ng-model='form.email'id="fname" size="50" height="500"  name="lname" ng-required="true" ><br>
+
+            <label for="mobile">mobile:</label><br>
+            <input type="number"  ng-model="form.mobile" id="fname" size="50" height="500" name="lname" ng-required="true" ><br>
+             <br>
+            <input  type="button" ng-click="submit()" class="btn btn-secondary" value="Create">
+            <p ng-if="yes" ng-model="{msg}}" ></p>
+            {{msg}}
+        </form>
+    </div>
+    <div>
+        <form class="form-center">
+        <label >Search :</label><br>
+        <input type="text"  ng-model="record " id="fname" size="50" height="48" name="ser" ng-required="true" ><br>
+        <br>
+        <input type="button" ng-click="search()"  class="btn btn-info" value="Search" >
+        <a href="/all_data/" class="fcc-btn">Get all data </a>
+        </form>
+    </div>
+    <div>
+        <form class="form-center">
+        <label >Name or Number to delete:</label><br>
+        <input type="text"  ng-model="del.delete " id="fname" size="50" height="70"  name="del" ng-required="true" ><br>
+        <br>
+        <input type="button" ng-click="delete()" class="btn btn-danger" value="Delete">
+        <input type="button"  class="btn btn-danger"  value="Delete All" data-toggle="modal" data-target="#myModal">
+        </form>
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+              <div class="modal-content">
+              
+                <!-- Modal Header -->
+                <div class="modal-header">
+                  <h4 class="modal-title">Warning</h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                
+                <!-- Modal body -->
+                <div class="modal-body">
+                Are you sure you want to delete all data
+                </div>
+                
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                  <button type="button" ng-click="all()"  class="btn btn-danger" data-dismiss="modal">Yes</button>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+    </div> 
+
+</div>
+ 
+ <script> src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-alpha.19/angular2.js"</script>
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+ 
+  
+ <script>
+
+    var app = angular.module('myApp', []);
+    app.controller('detail', function($scope,$http) {
+        $scope.form = {}
+        $scope.del={}
+        $scope.resp={}
+        $scope.yes= false
+        $scope.msg= ""
+
+    $scope.submit= function(){
+     var request =$http({
+         method :"POST",
+         data : $scope.form  ,
+         url: "/details/",
+         headers: {'Content-Type': 'application/json'},
+     },
+
+     );
+
+    request.then(function (response) 
+                {    
+                    console.log("status",response.data.status)
+                    if (response.data.status==true){
+                        console.log("in true")
+                        $scope.msg = "Successful"
+                        console.log($scope.msg)
+                        $scope.yes =true
+
+                    } 
+                    else{
+
+                        $scope.msg="not updated"
+
+                        }
+
+                                         
+                }
+    )
+    }
+    
+    // completeLogin(){   
+  
+    //             this.login.reset();  
+  
+     
+    //   }
+
+
+
+
+    $scope.delete= function(){
+     
+     var request =$http({
+         method :"POST",
+         data : $scope.del ,
+         url: "/delete/",
+         headers: {'Content-Type': 'application/json'},
+     });
+    }
+    
+
+    $scope.search= function(){
+     
+     let request =$http({
+         method :"POST",
+         data : {"data": $scope.record },
+         url: "/search/",
+         headers: {'Content-Type': 'application/json'},
+     });
+    
+     request.then(function (response) 
+                {
+                    response=response.data
+                    status=response.status
+                    console.log("==stsaus==",status)
+                    if (status){
+                       $scope.msg="True"
+                    }
+                    else{
+                        $scope.msg="False"
+                        console.log("in if",status)
+                    }
+                }   
+     ) 
+    
+    }
+
+
+    $scope.get_all= function(){
+     
+     let request =$http({
+         method :"POST",
+         data : {"data": $scope.record },
+         url: "/get_all/",
+         headers: {'Content-Type': 'application/json'},
+     });
+    
+     request.then(function (response) 
+                {
+                    response=response.data
+                    status=response.status
+                    console.log("==stsaus==",status)
+                    if (status){
+                       $scope.msg="True"
+                    }
+                    else{
+                        $scope.msg="False"
+                        console.log("in if",status)
+                    }
+                }   
+     ) 
+            }
+  
+
+
+
+
+
+    $scope.all= function(){
+     
+     var request =$http({
+         method :"POST",
+         data : {"data": "all"},
+         url: "/all/",
+         headers: {'Content-Type': 'application/json'},
+     });     
+    }
+
+    
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
